@@ -10,7 +10,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import org.apache.logging.log4j.util.Lazy;
 
-@EventBusSubscriber(modid = GamepadHotbar.MODID)
+@EventBusSubscriber(modid = GamepadHotbar.MOD_ID)
 public class GamepadHotbarModBusEvents {
     public static final KeyMapping.Category CYCLE_HOTBAR = new KeyMapping.Category(Identifier.fromNamespaceAndPath(
             "gamepadhotbar", "cycle_hotbar"
@@ -19,10 +19,10 @@ public class GamepadHotbarModBusEvents {
     public static final Lazy<KeyMapping> LEFT = Lazy.value(new KeyMapping("key.gamepadhotbar.cyclehotbar_0",
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), CYCLE_HOTBAR
     ));
-    public static final Lazy<KeyMapping> RIGHT = Lazy.value(new KeyMapping("key.gamepadhotbar.cyclehotbar_1",
+    public static final Lazy<KeyMapping> UP = Lazy.value(new KeyMapping("key.gamepadhotbar.cyclehotbar_1",
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), CYCLE_HOTBAR
     ));
-    public static final Lazy<KeyMapping> UP = Lazy.value(new KeyMapping("key.gamepadhotbar.cyclehotbar_2",
+    public static final Lazy<KeyMapping> RIGHT = Lazy.value(new KeyMapping("key.gamepadhotbar.cyclehotbar_2",
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), CYCLE_HOTBAR
     ));
     public static final Lazy<KeyMapping> DOWN = Lazy.value(new KeyMapping("key.gamepadhotbar.cyclehotbar_3",

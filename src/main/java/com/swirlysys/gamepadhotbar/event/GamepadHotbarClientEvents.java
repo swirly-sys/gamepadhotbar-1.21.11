@@ -28,24 +28,24 @@ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.joml.Vector2i;
 
-@EventBusSubscriber(modid = GamepadHotbar.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = GamepadHotbar.MOD_ID, value = Dist.CLIENT)
 public class GamepadHotbarClientEvents {
     private static final Identifier HOTBAR_SPRITE = Identifier.withDefaultNamespace("hud/hotbar");
     private static final Identifier HOTBAR_SELECTION_SPRITE = Identifier.withDefaultNamespace("hud/hotbar_selection");
     private static final Identifier HOTBAR_OFFHAND_LEFT_SPRITE = Identifier.withDefaultNamespace("hud/hotbar_offhand_left");
     private static final Identifier HOTBAR_OFFHAND_RIGHT_SPRITE = Identifier.withDefaultNamespace("hud/hotbar_offhand_right");
-    private static final Identifier HOTBAR_0 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_0");
-    private static final Identifier HOTBAR_1 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_1");
-    private static final Identifier HOTBAR_2 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_2");
-    private static final Identifier HOTBAR_3 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_3");
-    private static final Identifier HOTBAR_4 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_4");
-    private static final Identifier HOTBAR_5 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_5");
-    private static final Identifier HOTBAR_6 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_6");
-    private static final Identifier HOTBAR_7 = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "container/slot/hotbar_7");
-    private static final Identifier TAP_HOTBAR_LEFT = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "hud/tap_hotbar_left");
-    private static final Identifier TAP_HOTBAR_UP = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "hud/tap_hotbar_up");
-    private static final Identifier TAP_HOTBAR_RIGHT = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "hud/tap_hotbar_right");
-    private static final Identifier TAP_HOTBAR_DOWN = Identifier.fromNamespaceAndPath(GamepadHotbar.MODID, "hud/tap_hotbar_down");
+    private static final Identifier HOTBAR_0 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_0");
+    private static final Identifier HOTBAR_1 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_1");
+    private static final Identifier HOTBAR_2 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_2");
+    private static final Identifier HOTBAR_3 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_3");
+    private static final Identifier HOTBAR_4 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_4");
+    private static final Identifier HOTBAR_5 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_5");
+    private static final Identifier HOTBAR_6 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_6");
+    private static final Identifier HOTBAR_7 = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "container/slot/hotbar_7");
+    private static final Identifier TAP_HOTBAR_LEFT = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "hud/tap_hotbar_left");
+    private static final Identifier TAP_HOTBAR_UP = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "hud/tap_hotbar_up");
+    private static final Identifier TAP_HOTBAR_RIGHT = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "hud/tap_hotbar_right");
+    private static final Identifier TAP_HOTBAR_DOWN = Identifier.fromNamespaceAndPath(GamepadHotbar.MOD_ID, "hud/tap_hotbar_down");
     private static final Identifier HOTBAR_8 = Identifier.withDefaultNamespace("container/slot/sword");
     private static final Identifier HOTBAR_ATTACK_INDICATOR_BACKGROUND_SPRITE = Identifier.withDefaultNamespace(
             "hud/hotbar_attack_indicator_background"
@@ -99,18 +99,12 @@ public class GamepadHotbarClientEvents {
             guiGraphics.renderItemDecorations(Minecraft.getInstance().font, stack, x, y);
         }
     }
-    private static boolean isHovering(Slot slot, int mouseX, int mouseY, int guiLeft, int guiTop) {
-        int x = guiLeft + slot.x;
-        int y = guiTop + slot.y;
-        return mouseX >= x - 1 && mouseX < x + 16 + 1 &&
-                mouseY >= y - 1 && mouseY < y + 16 + 1;
-    }
 
     @SubscribeEvent
-    public static void gamepadHotbarTicks(ClientTickEvent.Post event) {
+    public static void onClientTick(ClientTickEvent.Post event) {
         Player player = Minecraft.getInstance().player;
         if (GamepadHotbarClientConfig.GAMEPAD_HOTBAR_TOGGLE.isFalse() || player == null) return;
-
+        if (player.isSpectator()) return;
         int current = player.getInventory().getSelectedSlot();
 
         while (GamepadHotbarModBusEvents.LEFT.get().consumeClick())
@@ -131,6 +125,7 @@ public class GamepadHotbarClientEvents {
 
         Entity entity = mc.getCameraEntity();
         if (event.getName() == VanillaGuiLayers.HOTBAR && entity instanceof Player player) {
+            if (player.isSpectator()) return;
             // Vanilla hotbar is not rendered
             event.setCanceled(true);
 
@@ -344,7 +339,6 @@ public class GamepadHotbarClientEvents {
         if (GamepadHotbarClientConfig.GAMEPAD_HOTBAR_TOGGLE.isFalse() || screen.getMenu().getCarried().isEmpty()) return;
 
         GuiGraphics guiGfx = event.getGuiGraphics();
-        Vector2i vec = new Vector2i(event.getMouseX(), event.getMouseY());
 
         // Ensures slot icons are always occupying the same slots on each screen
         int adjuster = 0;
@@ -361,12 +355,7 @@ public class GamepadHotbarClientEvents {
             if (slot.hasItem()) continue;
 
             Identifier icon = iterateSlotIcons(i);
-            if (isHovering(slot, vec.x, vec.y, screen.getGuiLeft(), screen.getGuiTop()))
-                guiGfx.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, ARGB.fromABGR(1090519040));
-
             guiGfx.blitSprite(RenderPipelines.GUI_TEXTURED, icon, slot.x, slot.y, 16, 16);
-            if (isHovering(slot, vec.x, vec.y, screen.getGuiLeft(), screen.getGuiTop()))
-                guiGfx.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, ARGB.fromABGR(-2130706433));
         }
         guiGfx.pose().popMatrix();
     }
