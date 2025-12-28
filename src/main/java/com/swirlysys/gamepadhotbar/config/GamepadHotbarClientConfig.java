@@ -12,6 +12,10 @@ public class GamepadHotbarClientConfig {
             .translation("gamepadhotbar.config.gamepad_hotbar_toggle")
             .define("gamepad_hotbar_toggle", true);
 
+    public static final ModConfigSpec.BooleanValue LOWER_STATUS = BUILDER
+            .translation("gamepadhotbar.config.lower_status")
+            .define("lower_status", true);
+
     public static final ModConfigSpec.BooleanValue MIRROR_MODE = BUILDER
             .translation("gamepadhotbar.config.mirror_mode")
             .define("mirror_mode", false);
@@ -26,7 +30,7 @@ public class GamepadHotbarClientConfig {
 
     public static final ModConfigSpec.IntValue PAD_Y = BUILDER
             .translation("gamepadhotbar.config.pad_hotbar_y")
-            .defineInRange("pad_hotbar_y", 5, 0, 20);
+            .defineInRange("pad_hotbar_y", 5, 0, 25);
 
     public static final ModConfigSpec.ConfigValue<@NotNull HotbarPos> POS_Y = BUILDER
             .translation("gamepadhotbar.config.pos_hotbar_y")
